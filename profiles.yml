@@ -1,0 +1,12 @@
+my_snowflake_profile:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: https://eu85787.us-east-2.aws.snowflakecomputing.com
+      warehouse: dbt_wh
+      role: dbt_role
+      user: dbt_user
+      password: Dbttest@111
+      database: analytics 
+      schema: raw
