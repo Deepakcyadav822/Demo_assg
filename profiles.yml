@@ -1,0 +1,11 @@
+circleci:
+    # use user and password auth
+    type: snowflake
+    account: "nxa13674.us-east-1"
+    user: "{{ env_var('DBT_DATA_MODELING_SNOWFLAKE_USER', 'not_set') }}"
+    password: "{{ env_var('DBT_DATA_MODELING_SNOWFLAKE_PASSWORD', 'not_set') }}"
+    role: "{{ env_var('DBT_DATA_MODELING_SNOWFLAKE_ROLE', 'not_set') }}"
+    database: "{{ env_var('DBT_DATA_MODELING_SNOWFLAKE_DATABASE', 'not_set') }}"
+    warehouse: "XSMALL_WAREHOUSE"
+    schema: "public"
+    query_tag: "circleci_dbt"
