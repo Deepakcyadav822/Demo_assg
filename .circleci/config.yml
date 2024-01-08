@@ -16,7 +16,7 @@ jobs:
       - checkout
       - run:
           name: "Pipeline builded"
-          command: "Snowflake succeded!"
+          command: "echo Snowflake succeded!"
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
