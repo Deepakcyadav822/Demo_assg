@@ -61,7 +61,8 @@ jobs:
       - checkout
       - run:
           name: "Pipeline builded"
-          command: "Snowflake succeeded!"
+          command: echo "Snowflake succeeded!"
+
 
 workflows:
   version: 2
