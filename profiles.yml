@@ -2,8 +2,8 @@ circleci:
     # use user and password auth
     type: snowflake
     account: "rc56421.us-east-2"
-    user: "{{ env_var('DBT_DATA_MODELING_SNOWFLAKE_USER', 'dbt_user') }}"
-    password: "{{ env_var('DBT_DATA_MODELING_SNOWFLAKE_PASSWORD', 'Dbttest@111') }}"
+    user: "{{ env_var('DBT_DATA_MODELING_SNOWFLAKE_USER', 'Deepak') }}"
+    password: "{{ env_var('DBT_DATA_MODELING_SNOWFLAKE_PASSWORD', 'Deepu@822') }}"
     role: "{{ env_var('DBT_DATA_MODELING_SNOWFLAKE_ROLE', 'dbt_role') }}"
     database: "{{ env_var('DBT_DATA_MODELING_SNOWFLAKE_DATABASE', 'analytics') }}"
     warehouse: "XSMALL_WAREHOUSE"
