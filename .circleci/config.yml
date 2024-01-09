@@ -5,6 +5,13 @@ jobs:
     docker:
       - image: python:3.8
 
+    steps:
+      - checkout
+      # Add more steps as needed for your specific project setup
+
+  deploy:
+    docker:
+      - image: python:3.8
 
     steps:
       - checkout
@@ -43,7 +50,6 @@ workflows:
             branches:
               only:
                 - main
-                
 # version: 2.1
 
 # jobs:
