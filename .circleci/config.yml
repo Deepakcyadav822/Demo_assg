@@ -31,6 +31,9 @@ jobs:
           name: Run dbt
           command: |
             dbt run --select customer_details
+      - run:
+          name: "Pipeline builded"
+          command: "Snowflake succeded!"
 
 
 workflows:
