@@ -19,9 +19,9 @@
 #       - run:
 #           name: Setup Snowflake Connection
 #           command: |
-#             echo "SNOWSQL_ACCOUNT: $SNOWSQL_ACCOUNT"
-#             echo "SNOWSQL_USER: $SNOWSQL_USER"
-#             echo "SNOWSQL_PASSWORD: $SNOWSQL_PASSWORD"
+            # echo "SNOWSQL_ACCOUNT: $SNOWSQL_ACCOUNT"
+            # echo "SNOWSQL_USER: $SNOWSQL_USER"
+            # echo "SNOWSQL_PASSWORD: $SNOWSQL_PASSWORD"
 
 #       - run:
 #           name: Install dbt
@@ -47,50 +47,48 @@
 #               only:
 #                 - main
 
-
-commands:
- setup-python-dependencies:
-   description: Setup the python environment for testing and linting
-   steps:
-     - checkout:
-         path: ~/project
-     - restore_cache:
-         keys:
-           - v1-poetry-cache-{{ arch }}-{{ .Branch }}-{{ checksum "poetry.lock" }}
-           - v1-poetry-cache-{{ arch }}-{{ .Branch }}
-           - v1-poetry-cache
-     - run: echo "export PATH=$HOME/.poetry/bin:$PATH" >> $BASH_ENV
-     - run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-     - run: poetry install
-     - save_cache:
-         key: v1-poetry-cache-{{ arch }}-{{ .Branch }}-{{ checksum "poetry.lock" }}
-         paths: /virtualenvs
+version: 2.1
 
 jobs:
-  dbt-build-ci:
-  executor: python
-  steps:
-    - setup-python-dependencies
-    - run: poetry run dbt deps --project-dir resources
-    - run:
-        name: compile dbt manifest in master branch
-        # use --target prod so the --defer will work correctly
-        command: |
-          git checkout master
-          poetry run dbt debug --project-dir resources --target prod
-          poetry run dbt compile --project-dir resources --target prod
-          mv resources/target/manifest.json .
-    - run: git checkout ${CIRCLE_BRANCH}
-    # separate run and test because "dbt build" will fail all downstream if upstream tests fail. We still want to see all tests results if the test failure is from production
-    # currently there is a version bug with state:modified.body, we will add state:modified.body back once we update dbt to be 1.0.4;
-    - run: poetry run dbt run --models state:modified --defer --state ~/project --exclude tag:skip-ci --project-dir resources -x
-    - run: poetry run dbt test --models state:modified --defer --state ~/project --exclude tag:skip-ci --project-dir resources
+  build:
+    docker:
+      - image: circleci/python:3.x
 
-workflows:
-  commit:
-    - dbt-build-ci:
-        context: dbt-ci-cd
-        filters:
-          branches:
-            ignore:
-              - master
+    steps:
+      - checkout
+      # Add more steps as needed for your specific project setup
+
+  deploy:
+    docker:
+      - image: circleci/python:3.x
+
+    steps:
+      - checkout
+
+      - run:
+          name: Setup Snowflake Connection
+          command: |
+            echo "SNOWSQL_ACCOUNT: $SNOWSQL_ACCOUNT"
+            echo "SNOWSQL_USER: $SNOWSQL_USER"
+            echo "SNOWSQL_PASSWORD: $SNOWSQL_PASSWORD"
+            source $BASH_ENV
+
+      - run:
+          name: Install dbt
+          command: |
+            pip install dbt
+
+      - run:
+          name: Configure dbt Cloud
+          command: |
+            dbt cloud auth --token dbtc_5-DkHL8beLx8gZphVcSzX3RJQ0XuAH99W9hEm29Ftoe6OLaYFo
+
+      - run:
+          name: Run dbt
+          command: |
+            dbt run
+
+      - run:
+          name: Push dbt Artifacts to dbt Cloud
+          command: |
+            dbt cloud push
