@@ -74,9 +74,10 @@ jobs:
 
 
       - run:
-          name: Run dbt
+          name: "Run dbt commands"
           command: |
-            dbt run --select customer_details
+            # Authenticate with dbt Cloud using the stored API token
+            dbt cloud auth --token $DBT_CLOUD_API_TOKEN
 
 workflows:
   version: 2
