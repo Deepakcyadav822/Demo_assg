@@ -13,15 +13,14 @@
 #     docker:
 #       - image: python:3.8
 
-#     steps:
-#       - checkout
-
-#       - run:
-#           name: Setup Snowflake Connection
-#           command: |
-#             echo "SNOWSQL_ACCOUNT: $SNOWSQL_ACCOUNT"
-#             echo "SNOWSQL_USER: $SNOWSQL_USER"
-#             echo "SNOWSQL_PASSWORD: $SNOWSQL_PASSWORD"
+    # steps:
+    #   - checkout
+    #   - run:
+    #       name: Setup Snowflake Connection
+    #       command: |
+    #         echo "SNOWSQL_ACCOUNT: $SNOWSQL_ACCOUNT"
+    #         echo "SNOWSQL_USER: $SNOWSQL_USER"
+    #         echo "SNOWSQL_PASSWORD: $SNOWSQL_PASSWORD"
 
 #       - run:
 #           name: Install dbt
@@ -56,12 +55,18 @@ version: 2.1
 jobs:
   dbt-cloud:
     docker:
-      - image: cimg/base:stable
+      - image: python:3.8
     steps:
       - checkout
       - run:
           name: "Pipeline builded"
           command: echo "Snowflake succeeded!"
+      - run:          
+          name: Setup Snowflake Connection
+          command: |
+            echo "SNOWSQL_ACCOUNT: $SNOWSQL_ACCOUNT"
+            echo "SNOWSQL_USER: $SNOWSQL_USER"
+            echo "SNOWSQL_PASSWORD: $SNOWSQL_PASSWORD"
 
 
 workflows:
