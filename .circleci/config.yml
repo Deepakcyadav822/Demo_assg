@@ -31,10 +31,10 @@
       #     command: |
       #       dbt cloud auth --token dbtc_5-DkHL8beLx8gZphVcSzX3RJQ0XuAH99W9hEm29Ftoe6OLaYFo
 
-#       - run:
-#           name: Run dbt
-#           command: |
-#             dbt run --select customer_details
+      # - run:
+      #     name: Run dbt
+      #     command: |
+      #       dbt run --select customer_details
       
 
 
@@ -71,11 +71,13 @@ jobs:
           name: Install dbt
           command: |
             pip install dbt
+
+
       - run:
-          name: Configure dbt Cloud
+          name: Run dbt
           command: |
-            dbt cloud auth --token dbtc_5-DkHL8beLx8gZphVcSzX3RJQ0XuAH99W9hEm29Ftoe6OLaYFo
-            
+            dbt run --select customer_details
+
 workflows:
   version: 2
   say-hello-workflow:
