@@ -72,10 +72,10 @@ jobs:
           command: |
             pip install dbt
 
-        # - run:
-        #   name: "Run dbt commands"
-        #   command: |
-        #     dbt run 
+        - run:
+          name: "Run dbt commands"
+          command: |
+            dbt run 
 
 workflows:
   version: 2
