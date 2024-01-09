@@ -74,5 +74,5 @@ jobs:
 
 workflows:
   say-hello-workflow:
-    jobs:
-      - say-hello
+    jobs:dbt-cloud
+      - 
