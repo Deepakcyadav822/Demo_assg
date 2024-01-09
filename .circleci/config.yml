@@ -1,50 +1,96 @@
-version: 2.1
+# version: 2.1
+
+# jobs:
+#   build:
+#     docker:
+#       - image: python:3.8
+
+#     steps:
+#       - checkout
+#       # Add more steps as needed for your specific project setup
+
+#   deploy:
+#     docker:
+#       - image: python:3.8
+
+#     steps:
+#       - checkout
+
+#       - run:
+#           name: Setup Snowflake Connection
+#           command: |
+#             echo "SNOWSQL_ACCOUNT: $SNOWSQL_ACCOUNT"
+#             echo "SNOWSQL_USER: $SNOWSQL_USER"
+#             echo "SNOWSQL_PASSWORD: $SNOWSQL_PASSWORD"
+
+#       - run:
+#           name: Install dbt
+#           command: |
+#             pip install dbt
+#       - run:
+#           name: Run dbt
+#           command: |
+#             dbt run --select customer_details
+      
+
+
+# workflows:
+#   version: 2
+#   build-and-deploy:
+#     jobs:
+#       - build
+#       - deploy:
+#           requires:
+#             - build
+#           filters:
+#             branches:
+#               only:
+#                 - main
+
+
+commands:
+ setup-python-dependencies:
+   description: Setup the python environment for testing and linting
+   steps:
+     - checkout:
+         path: ~/project
+     - restore_cache:
+         keys:
+           - v1-poetry-cache-{{ arch }}-{{ .Branch }}-{{ checksum "poetry.lock" }}
+           - v1-poetry-cache-{{ arch }}-{{ .Branch }}
+           - v1-poetry-cache
+     - run: echo "export PATH=$HOME/.poetry/bin:$PATH" >> $BASH_ENV
+     - run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+     - run: poetry install
+     - save_cache:
+         key: v1-poetry-cache-{{ arch }}-{{ .Branch }}-{{ checksum "poetry.lock" }}
+         paths: /virtualenvs
 
 jobs:
-  build:
-    docker:
-      - image: python:3.8
-
-    steps:
-      - checkout
-      # Add more steps as needed for your specific project setup
-
-  deploy:
-    docker:
-      - image: python:3.8
-
-    steps:
-      - checkout
-
-      - run:
-          name: Setup Snowflake Connection
-          command: |
-            echo "SNOWSQL_ACCOUNT: $SNOWSQL_ACCOUNT"
-            echo "SNOWSQL_USER: $SNOWSQL_USER"
-            echo "SNOWSQL_PASSWORD: $SNOWSQL_PASSWORD"
-
-      - run:
-          name: Install dbt
-          command: |
-            pip install dbt
-      - run:
-          name: Run dbt
-          command: |
-            dbt run --select customer_details
-      - run:
-          name: "Pipeline builded"
-          command: "Snowflake succeded!"
-
+  dbt-build-ci:
+  executor: python
+  steps:
+    - setup-python-dependencies
+    - run: poetry run dbt deps --project-dir resources
+    - run:
+        name: compile dbt manifest in master branch
+        # use --target prod so the --defer will work correctly
+        command: |
+          git checkout master
+          poetry run dbt debug --project-dir resources --target prod
+          poetry run dbt compile --project-dir resources --target prod
+          mv resources/target/manifest.json .
+    - run: git checkout ${CIRCLE_BRANCH}
+    # separate run and test because "dbt build" will fail all downstream if upstream tests fail. We still want to see all tests results if the test failure is from production
+    # currently there is a version bug with state:modified.body, we will add state:modified.body back once we update dbt to be 1.0.4;
+    - run: poetry run dbt run --models state:modified --defer --state ~/project --exclude tag:skip-ci --project-dir resources -x
+    - run: poetry run dbt test --models state:modified --defer --state ~/project --exclude tag:skip-ci --project-dir resources
 
 workflows:
-  version: 2
-  build-and-deploy:
-    jobs:
-      - build
-      - deploy:
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - main
+  commit:
+    - dbt-build-ci:
+        context: dbt-ci-cd
+        filters:
+          branches:
+            ignore:
+              - master
