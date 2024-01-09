@@ -22,14 +22,14 @@
     #         echo "SNOWSQL_USER: $SNOWSQL_USER"
     #         echo "SNOWSQL_PASSWORD: $SNOWSQL_PASSWORD"
 
-#       - run:
-#           name: Install dbt
-#           command: |
-#             pip install dbt
-#       - run:
-#           name: Configure dbt Cloud
-#           command: |
-#             dbt cloud auth --token dbtc_5-DkHL8beLx8gZphVcSzX3RJQ0XuAH99W9hEm29Ftoe6OLaYFo
+      # - run:
+      #     name: Install dbt
+      #     command: |
+      #       pip install dbt
+      # - run:
+      #     name: Configure dbt Cloud
+      #     command: |
+      #       dbt cloud auth --token dbtc_5-DkHL8beLx8gZphVcSzX3RJQ0XuAH99W9hEm29Ftoe6OLaYFo
 
 #       - run:
 #           name: Run dbt
@@ -67,8 +67,15 @@ jobs:
             echo "SNOWSQL_ACCOUNT: $SNOWSQL_ACCOUNT"
             echo "SNOWSQL_USER: $SNOWSQL_USER"
             echo "SNOWSQL_PASSWORD: $SNOWSQL_PASSWORD"
-
-
+      - run:
+          name: Install dbt
+          command: |
+            pip install dbt
+      - run:
+          name: Configure dbt Cloud
+          command: |
+            dbt cloud auth --token dbtc_5-DkHL8beLx8gZphVcSzX3RJQ0XuAH99W9hEm29Ftoe6OLaYFo
+            
 workflows:
   version: 2
   say-hello-workflow:
