@@ -1,58 +1,9 @@
-# version: 2.1
-
-# jobs:
-#   build:
-#     docker:
-#       - image: python:3.8
-
-#     steps:
-#       - checkout
-#       # Add more steps as needed for your specific project setup
-
-#   deploy:
-#     docker:
-#       - image: python:3.8
-
-#     steps:
-#       - checkout
-
-#       - run:
-#           name: Setup Snowflake Connection
-#           command: |
-            # echo "SNOWSQL_ACCOUNT: $SNOWSQL_ACCOUNT"
-            # echo "SNOWSQL_USER: $SNOWSQL_USER"
-            # echo "SNOWSQL_PASSWORD: $SNOWSQL_PASSWORD"
-
-#       - run:
-#           name: Install dbt
-#           command: |
-#             pip install dbt
-#       - run:
-#           name: Run dbt
-#           command: |
-#             dbt run --select customer_details
-      
-
-
-# workflows:
-#   version: 2
-#   build-and-deploy:
-#     jobs:
-#       - build
-#       - deploy:
-#           requires:
-#             - build
-#           filters:
-#             branches:
-#               only:
-#                 - main
-
 version: 2.1
 
 jobs:
   build:
     docker:
-      - image: circleci/python:3.x
+      - image: python:3.8
 
     steps:
       - checkout
@@ -60,7 +11,7 @@ jobs:
 
   deploy:
     docker:
-      - image: circleci/python:3.x
+      - image: python:3.8
 
     steps:
       - checkout
@@ -71,24 +22,73 @@ jobs:
             echo "SNOWSQL_ACCOUNT: $SNOWSQL_ACCOUNT"
             echo "SNOWSQL_USER: $SNOWSQL_USER"
             echo "SNOWSQL_PASSWORD: $SNOWSQL_PASSWORD"
-            source $BASH_ENV
 
       - run:
           name: Install dbt
           command: |
             pip install dbt
-
-      - run:
-          name: Configure dbt Cloud
-          command: |
-            dbt cloud auth --token dbtc_5-DkHL8beLx8gZphVcSzX3RJQ0XuAH99W9hEm29Ftoe6OLaYFo
-
       - run:
           name: Run dbt
           command: |
-            dbt run
+            dbt run --select customer_details
+      
 
-      - run:
-          name: Push dbt Artifacts to dbt Cloud
-          command: |
-            dbt cloud push
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - main
+
+# version: 2.1
+
+# jobs:
+#   build:
+#     docker:
+#       - image: circleci/python:3.x
+
+#     steps:
+#       - checkout
+#       # Add more steps as needed for your specific project setup
+
+#   deploy:
+#     docker:
+#       - image: circleci/python:3.x
+
+#     steps:
+#       - checkout
+
+#       - run:
+#           name: Setup Snowflake Connection
+#           command: |
+#             echo "SNOWSQL_ACCOUNT: $SNOWSQL_ACCOUNT"
+#             echo "SNOWSQL_USER: $SNOWSQL_USER"
+#             echo "SNOWSQL_PASSWORD: $SNOWSQL_PASSWORD"
+#             source $BASH_ENV
+
+#       - run:
+#           name: Install dbt
+#           command: |
+#             pip install dbt
+
+#       - run:
+#           name: Configure dbt Cloud
+#           command: |
+#             dbt cloud auth --token dbtc_5-DkHL8beLx8gZphVcSzX3RJQ0XuAH99W9hEm29Ftoe6OLaYFo
+
+#       - run:
+#           name: Run dbt
+#           command: |
+#             dbt run
+
+#       - run:
+#           name: Push dbt Artifacts to dbt Cloud
+#           command: |
+#             dbt cloud push
