@@ -27,6 +27,10 @@ jobs:
           name: Install dbt
           command: |
             pip install dbt
+      - run:
+          name: Run dbt
+          command: |
+            dbt run --select customer_details
 
 
 workflows:
