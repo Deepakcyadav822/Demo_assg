@@ -77,8 +77,8 @@ jobs:
         #   command: |
         #     dbt run 
 
-# workflows:
-#   version: 2
-#   build-and-deploy:
-#     jobs:
-#       - dbt-cloud
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - dbt-cloud
