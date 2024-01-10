@@ -1,83 +1,56 @@
-# version: 2.1
-
-# jobs:
-#   build:
-#     docker:
-#       - image: python:3.8
-
-#     steps:
-#       - checkout
-#       # Add more steps as needed for your specific project setup
-
-#   deploy:
-#     docker:
-#       - image: python:3.8
-
-#     steps:
-#       - checkout
-#       - run:
-#           name: Setup Snowflake Connection
-#           command: |
-#             echo "SNOWSQL_ACCOUNT: $SNOWSQL_ACCOUNT"
-#             echo "SNOWSQL_USER: $SNOWSQL_USER"
-#             echo "SNOWSQL_PASSWORD: $SNOWSQL_PASSWORD"
-
-#       - run:
-#           name: Install dbt
-#           command: |
-#             pip install dbt
-#       - run:
-#           name: Configure dbt Cloud
-#           command: |
-#             dbt cloud auth --token dbtc_5-DkHL8beLx8gZphVcSzX3RJQ0XuAH99W9hEm29Ftoe6OLaYFo
-
-#       - run:
-#           name: Run dbt
-#           command: |
-#             dbt run --select customer_details
-      
-
-
-# workflows:
-#   version: 2
-#   build-and-deploy:
-#     jobs:
-#       - build
-#       - deploy:
-#           requires:
-#             - build
-#           filters:
-#             branches:
-#               only:
-#                 - main
-
 version: 2.1
 
 jobs:
-  dbt-cloud:
+  build:
     docker:
       - image: python:3.8
+
     steps:
       - checkout
-      - run:          
+      # Add more steps as needed for your specific project setup
+
+  deploy:
+    docker:
+      - image: python:3.8
+
+    steps:
+      - checkout
+      - run:
           name: Setup Snowflake Connection
           command: |
             echo "SNOWSQL_ACCOUNT: $SNOWSQL_ACCOUNT"
             echo "SNOWSQL_USER: $SNOWSQL_USER"
             echo "SNOWSQL_PASSWORD: $SNOWSQL_PASSWORD"
+
       - run:
           name: Install dbt
           command: |
             pip install dbt
       - run:
-          name: "Run dbt commands"
+          name: Configure dbt Cloud
           command: |
-            echo "Buid success"
+            dbt cloud auth --token dbtc_5-DkHL8beLx8gZphVcSzX3RJQ0XuAH99W9hEm29Ftoe6OLaYFo
+
+      - run:
+          name: Run dbt
+          command: |
+            dbt run --select customer_details
       - run:
           name: "Pipeline builded"
-          command: echo "Snowflake succeeded!"
+          command: echo "Snowflake succeeded!"   
+
+
 workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - dbt-cloud
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - main
+
+        

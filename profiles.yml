@@ -6,6 +6,6 @@ circleci:
     password: "{{ env_var('DBT_DATA_MODELING_SNOWFLAKE_PASSWORD', 'Deepu@822') }}"
     role: "{{ env_var('DBT_DATA_MODELING_SNOWFLAKE_ROLE', 'dbt_role') }}"
     database: "{{ env_var('DBT_DATA_MODELING_SNOWFLAKE_DATABASE', 'analytics') }}"
-    warehouse: "XSMALL_WAREHOUSE"
+    warehouse: "dbt_wh"
     schema: "public"
     query_tag: "circleci_dbt"
