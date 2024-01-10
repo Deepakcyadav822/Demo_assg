@@ -37,5 +37,5 @@ models:
     # Applies to all files under models/example/
     integration:
       rpt:
-        +materialized: table
+        +materialized: veiws
         +schema:  RPT
