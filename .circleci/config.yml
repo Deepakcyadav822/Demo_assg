@@ -5,11 +5,6 @@ jobs:
     docker:
       - image: python:3.8
 
-  
-
-  deploy:
-    docker:
-      - image: python:3.8
 
     steps:
       - checkout
@@ -32,7 +27,7 @@ jobs:
       - run:
           name: Run dbt
           command: |
-            dbt run --order_summary
+            dbt run --select order_summary
       - run:
           name: "Pipeline builded"
           command: echo "Snowflake succeeded!"   
