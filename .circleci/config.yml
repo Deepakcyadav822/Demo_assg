@@ -34,7 +34,7 @@ jobs:
       - run:
           name: Run dbt
           command: |
-            dbt run --select customer_details
+            dbt run --order_summary
       - run:
           name: "Pipeline builded"
           command: echo "Snowflake succeeded!"   
